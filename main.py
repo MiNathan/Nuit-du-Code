@@ -1,2 +1,118 @@
+import pyxel as p
+
+allies = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux allie
+ennemis = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux ennemis
+
 class Vaisseau:
-    pass
+    """
+    Classe pour tous les vaisseaux
+    Chaque vaisseau fait partie d'une de 4 classes:
+        Fregate; Destroyer; Porte-Vaisseau; Sous-Vaisseau
+    Chaque vaisseau fait partie de l'equipe alliee (bleue) ou ennemie (rouge)
+    Les vaisseaux on _ attributs:
+        pv, int: Points de vie du vaisseau
+        spd_atk, int: Temps entre chaques attaques
+        str_atk, int: Les dégats infligés par les attaques
+        aa, bool: True Si le vaisseau est capable d'attaquer les sous-vaisseaux
+        cap, int: Si le vaisseau peut transporter des sous-vaisseaux, sinon égal à 0
+    """
+
+    def __init__(self, type, x, y):
+        """
+        Initialisation en fonction du type de vaisseau
+        Les attributs peuvents être améliorés plus tard avec des crédits
+        """
+        if type == "fregate":
+            self.pv = 20
+            self.spd_atk = 120 # Attaque toutes les 2 secondes
+            self.str_atk = 3 # Les attaques font 1 dégats
+            self.aa = False
+            self.cap = 0
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+
+        if type == "destroyer":
+            self.pv = 30
+            self.spd_atk = 300 # Attaque toutes les 5 secondes
+            self.str_atk = 5 # Les attaques font 2 dégats
+            self.aa = True
+            self.cap = 0
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+
+        if type == "porte-vaisseau":
+            self.pv = 50
+            self.spd_atk = 0 # N'attaque pas directement
+            self.str_atk = 0
+            self.aa = False
+            self.cap = 3
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+
+        if type == "sous-vaisseau_bombardier":
+            self.pv = 5
+            self.spd_atk = 180 # Attaque toutes 3 les secondes
+            self.str_atk = 2 # Les attaques font 2 dégats
+            self.aa = True
+            self.cap = 0
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+
+        if type == "sous-vaisseau_chasseur":
+            self.pv = 5
+            self.spd_atk = 30 # Attaque 2 fois par secondes
+            self.str_atk = 1 # Les attaques font 1 dégats
+            self.aa = False
+            self.cap = 0
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+    
+
+    def coule(self):
+        """
+        Fonction pour determiner si le vaisseau est detruit
+        Renvoie True et remplace le vaisseau par un rectangle noir si le vaisseau n'a plus de pv
+        Sinon renvoie False
+        """
+        if self.pv <= 0:
+            p.rect(self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+
+    def prends_degats(self, degats):
+        self.pv -= degats
+        self.coule()
+
+    def attaquer(self, cible):
+        cible.prends_degats(self.str_atk)
+    
+    def selection(self):
+        if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
+            if p.btnp(p.MOUSE_BUTTON_RIGHT):
+                pass
+    
+    def draw_vais(self):
+        p.blt(self.coords[0], self.coords[1], 0, self.x, self.y, self.coords[2], self.coords[3], 0)
+
+class App:
+    def __init__(self):
+        p.init(width=128, height=128, title="Bataille Spatiale", fps=60)
+        p.load("theme.pyxres")
+        p.mouse(True)
+        ennemis["fregate"].append(Vaisseau("fregate", 40, 20))
+        allies["fregate"].append(Vaisseau("fregate", 40, 100))
+
+        p.run(self.update, self.draw)
+
+    def update(self):
+        pass
+
+    def draw(self):
+        p.cls(0)
+        allies["fregate"][0].draw_vais()
+        ennemis["fregate"][0].draw_vais()
+
+App()
