@@ -1,0 +1,13 @@
+Bataille Navale (dans l'espace):
+
+Vaisseaux de base:
+	5 au début du jeu
+	Possible de les améliorer pendant la partie
+	Différentes classes pour les vaisseaux (Type destroyer, frégate, porte-vaisseau…)
+	Destroyer: Vaisseau lourd, beaucoup de dégats, tir lent, anti-vaisseau
+	Frégate: Dégats légers, tir rapide
+	Porte-Vaisseau: Ne tire pas, mais peut stocker et envoyer des mini-vaisseaux
+		Mini-vaisseaux:Très mobiles, 2 types; chasseur et bombardier, attention à l'anti air
+
+	Vaisseaux ennemis aléatoires à l'opposé
+	Quand détruits, donne des crédits au joueur
