@@ -148,7 +148,8 @@ class App:
         allies[0].append(Vaisseau("destroyer", "allies", 4, 206))
         allies[0].append(Vaisseau("porte-vaisseau", "allies", 4, 176))
         ennemis[0].append(Vaisseau("fregate", "ennemis", 4, 4))
-        ennemis[0].append(Vaisseau("fregate", "ennemis", 40, 4))
+        allies[0].append(Vaisseau("destroyer", "ennemis", 4, 34))
+        allies[0].append(Vaisseau("porte-vaisseau", "ennemis", 4, 64))
 
         p.run(self.update, self.draw)
 
