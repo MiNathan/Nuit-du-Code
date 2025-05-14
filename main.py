@@ -1,8 +1,8 @@
 import pyxel as p
 import random as r
 
-allies = [[], [], [], []] # Vaisseaux allie
-ennemis = [[], [], [], []]# Vaisseaux ennemis
+allies = [] # Vaisseaux allie
+ennemis = []# Vaisseaux ennemis
 
 
 class UI:
@@ -40,11 +40,13 @@ class Vaisseau:
         Fregate; Destroyer; Porte-Vaisseau; Sous-Vaisseau
     Chaque vaisseau fait partie de l'equipe alliee (bleue) ou ennemie (rouge)
     Les vaisseaux on _ attributs:
+        equipe, str: L'equipe auquelle le vaisseau appartient
+        x, int: coordonee x dans la fenetre graphique
+        y, int: coordonee y dans la fenetre graphique
         pv, int: Points de vie du vaisseau
-        spd_atk, int: Temps entre chaques attaques
         str_atk, int: Les dégats infligés par les attaques
-        aa, bool: True Si le vaisseau est capable d'attaquer les sous-vaisseaux
         cap, int: Si le vaisseau peut transporter des sous-vaisseaux, sinon égal à 0
+        coords, tuple: les coordonees du vaisseau dans le fichier pyxel
     """
 
     def __init__(self, type, equipe, x, y):
@@ -52,6 +54,7 @@ class Vaisseau:
         Initialisation en fonction du type de vaisseau
         Les attributs peuvents être améliorés plus tard avec des crédits
         """
+        self.type = type
         self.equipe = equipe
         self.x = x
         self.y = y
@@ -63,14 +66,14 @@ class Vaisseau:
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "destroyer":
-            self.pv = 30
+            self.pv = 50
             self.str_atk = 5 # Les attaques font 2 dégats
             self.cap = 0
             self.coords = (0, 20, 56, 24) # Les coordonées dans le fichier pyxel
 
         if type == "porte-vaisseau":
-            self.pv = 50
-            self.str_atk = 0
+            self.pv = 100
+            self.str_atk = 1
             self.cap = 3
             self.coords = (0, 56, 64, 24) # Les coordonées dans le fichier pyxel
 
@@ -106,7 +109,7 @@ class Vaisseau:
         Sinon renvoie False
         """
         if self.pv <= 0:
-            p.rect(self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.rect(self.x, self.y, self.coords[2], self.coords[3], 0)
             return True
         return False
 
@@ -114,23 +117,26 @@ class Vaisseau:
         self.pv -= degats
         self.coule()
 
-    def attaquer(self, cible):
-        self.cible.prends_degats(self.str_atk)
+    def attaquer(self):
+        cible = self.selection_cible()
+        if cible != None and not self.coule():
+            p.line(self.x, self.y, self.cible.x, self.cible.y, 8)
+            cible.prends_degats(self.str_atk)
 
     def selection_cible(self):
         if self.equipe == "allies" and not self.coule():
             i_tab = 0
-            if ennemis[i_tab] == [] and i_tab < len(ennemis[i_tab]):
+            if i_tab >= len(ennemis):
                 i_tab += 1
             else:
-                self.cible = r.choice(ennemis[i_tab])
+                self.cible = r.choice(ennemis)
 
         if self.equipe == "ennemis" and not self.coule():
             i_tab = 0
-            if allies[i_tab] == [] and i_tab < len(allies[i_tab]):
+            if i_tab >= len(allies):
                 i_tab += 1
             else:
-                self.cible = r.choice(allies[i_tab])
+                self.cible = r.choice(allies)
 
     def draw_vais(self):
         if self.equipe == "allies":
@@ -144,64 +150,56 @@ class App:
         p.init(width=256, height=256, title="Bataille Spatiale", fps=60)
         p.load("theme.pyxres")
         p.mouse(True)
-        allies[0].append(Vaisseau("fregate", "allies", 4, 236))
-        allies[0].append(Vaisseau("destroyer", "allies", 4, 206))
-        allies[0].append(Vaisseau("porte-vaisseau", "allies", 4, 176))
-        ennemis[0].append(Vaisseau("fregate", "ennemis", 4, 4))
-        allies[0].append(Vaisseau("destroyer", "ennemis", 4, 34))
-        allies[0].append(Vaisseau("porte-vaisseau", "ennemis", 4, 64))
+        allies.append(Vaisseau("fregate", "allies", 4, 236))
+        allies.append(Vaisseau("fregate", "allies", 40, 236))
+        allies.append(Vaisseau("destroyer", "allies", 4, 206))
+        ennemis.append(Vaisseau("fregate", "ennemis", 4, 4))
+        ennemis.append(Vaisseau("destroyer", "ennemis", 4, 34))
+        self.tour = 0
 
         p.run(self.update, self.draw)
 
     def victoire(self):
         compteur_vais_a = 0
         compteur_pertes_a = 0
-        for tab in allies:
-            for vais in tab:
-                compteur_vais_a += 1
-                if vais.coule():
-                    compteur_pertes_a += 1
-                print("allies:", (compteur_vais_a, compteur_pertes_a))
+        for vais in allies:
+            compteur_vais_a += 1
+            if vais.coule():
+                compteur_pertes_a += 1
 
         compteur_vais_e = 0
         compteur_pertes_e = 0
-        for tab in ennemis:
-            for vais in tab:
-                compteur_vais_e += 1
-                if vais.coule():
-                    compteur_pertes_e += 1
-                print("ennemis:", (compteur_vais_e, compteur_pertes_e))
+        for vais in ennemis:
+            compteur_vais_e += 1
+            if vais.coule():
+                compteur_pertes_e += 1
 
         if compteur_pertes_a == compteur_vais_a or compteur_pertes_e == compteur_vais_e: 
             if compteur_pertes_a == compteur_vais_a:
-                print("Les ennemis ont gagné la bataille")
+                print("Les allies ont perdu la bataille")
             if compteur_pertes_e == compteur_vais_e:
-                print("Les allies ont gagné la bataille")
+                print("Les ennemis ont perdu la bataille")
             p.quit()
 
     def update(self):
-        for tab in allies:
-            for vais in tab:
-                if vais.get_cible().coule():
-                    vais.selection_cible()
-        if p.btnp(p.KEY_SPACE):
-            for tab in allies:
-                for vais in tab:
-                    vais.attaquer(vais.get_cible)
-            for tab in ennemis:
-                for vais in tab:
-                    vais.attaquer(vais.get_cible)
+        if p.frame_count % 60 == 0:
+            print("Tour n°", self.tour)
+            self.tour += 1
+            for vais in allies:
+                vais.attaquer()
+            for vais in ennemis:
+                vais.attaquer()
             self.victoire()
 
     def draw(self):
         p.cls(0)
         p.line(0, 127, 256, 127, 1)
         p.line(0, 128, 256, 128, 1)
-        for tab in allies:
-            for vais in tab:
-                vais.draw_vais()
-        for tab in ennemis:
-            for vais in tab:
-                vais.draw_vais()
+        for vais in allies:
+            vais.draw_vais()
+            vais.coule()
+        for vais in ennemis:
+            vais.draw_vais()
+            vais.coule()
 
 App()
