@@ -134,9 +134,12 @@ class Vaisseau:
 
     def draw_vais(self):
         if self.equipe == "allies":
-            p.blt(self.x, self.y, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(25 , 140, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(70, 192, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(192, 200, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(220, 100, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
         if self.equipe == "ennemis":
-            p.blt(self.x, self.y, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(128, 192, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
 
 
 class App:
