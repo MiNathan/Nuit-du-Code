@@ -173,7 +173,7 @@ class App:
     
         
     def ecran_acceuil(self):
-        if self.ecran < 102 :
+        if self.ecran < 98 :
             self.ecran = self.ecran + 1 
 
         
@@ -215,9 +215,15 @@ class App:
     def draw(self):
         if self.menu == 0:
             p.cls(0)
-            p.blt(self.ecran, 50, 0 , 0 ,0 , 51 ,23)
-            if self.ecran == 102:
-                p.text(90, 80, "Appuyez sur espace", 7)
+            p.blt(self.ecran, 50, 0 , 0 ,20 , 56 ,24)
+            if self.ecran == 98:
+                
+                p.text(97, 80, "Mode d'emploi :", 7)
+                p.text(50, 95, "Ce programme, realise par le module pyxel", 7)
+                p.text(55, 110, "est une simulation de bataille navale", 7)
+                p.text(65, 125, "Appuyez sur espace pour continuer", 7)
+
+               
         if self.menu == 1:
             p.cls(0)
             p.line(0, 127, 256, 127, 1)
