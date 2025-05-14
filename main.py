@@ -120,7 +120,7 @@ class Vaisseau:
     def attaquer(self):
         cible = self.selection_cible()
         if cible != None and not self.coule():
-            p.line(self.x, self.y, cible.get_coords, cible.get_coords, 8)
+            p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 8)
             cible.prends_degats(self.str_atk)
 
     def selection_cible(self):
@@ -140,12 +140,9 @@ class Vaisseau:
 
     def draw_vais(self):
         if self.equipe == "allies":
-            p.blt(25 , 140, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
-            p.blt(70, 192, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
-            p.blt(192, 200, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
-            p.blt(220, 100, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(self.x, self.y, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
         if self.equipe == "ennemis":
-            p.blt(128, 192, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            p.blt(self.x, self.y, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
 
 
 class App:
@@ -182,27 +179,24 @@ class App:
                 print("Les allies ont perdu la bataille")
             if compteur_pertes_e == compteur_vais_e:
                 print("Les ennemis ont perdu la bataille")
-            p.quit()
 
     def update(self):
-        if p.frame_count % 60 == 0:
-            print("Tour n°", self.tour)
-            self.tour += 1
-            for vais in allies:
-                vais.attaquer()
-            for vais in ennemis:
-                vais.attaquer()
-            self.victoire()
+        self.victoire()
 
     def draw(self):
         p.cls(0)
         p.line(0, 127, 256, 127, 1)
         p.line(0, 128, 256, 128, 1)
-        for vais in allies:
-            vais.draw_vais()
-            vais.coule()
-        for vais in ennemis:
-            vais.draw_vais()
-            vais.coule()
+        if p.frame_count % 60 == 0:
+            print("Tour n°", self.tour)
+            self.tour += 1
+            for vais in allies:
+                vais.attaquer()
+                vais.draw_vais()
+                vais.coule()
+            for vais in ennemis:
+                vais.attaquer()
+                vais.draw_vais()
+                vais.coule()
 
 App()
