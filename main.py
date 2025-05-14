@@ -1,0 +1,2 @@
+class Vaisseau:
+    pass
