@@ -3,6 +3,35 @@ import pyxel as p
 allies = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux allie
 ennemis = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux ennemis
 
+
+class UI:
+    def __init__(self):
+        self.credit = 0
+
+    def get_credit(self):
+        return self.credit
+
+    def set_credit(self,val):
+        self.credit =val
+
+    def ajout(self):
+        coules=[]
+        for tab in ennemis.values():
+            for vais in tab :
+                if vais.coule(): 
+                    coules.append(vais)
+        for vais in coules:
+            self.credit = self.credit - vais.get_pv()
+            for tab in ennemis.values():
+                for vaisseau in tab :
+                    if vaisseau == vais:
+                        tab.remove(vaisseau)
+
+                            
+
+
+
+
 class Vaisseau:
     """
     Classe pour tous les vaisseaux
@@ -76,7 +105,12 @@ class Vaisseau:
             self.aa = False
             self.cap = 0
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+    def get_pv(self):
+        return self.pv
     
+    def set_pv(self,val):
+        self.pv = val
+
     def get_coords(self):
         return self.coords
 
@@ -88,6 +122,8 @@ class Vaisseau:
         """
         if self.pv <= 0:
             p.rect(self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            return True
+        return False
 
     def prends_degats(self, degats):
         self.pv -= degats
@@ -111,6 +147,14 @@ class Vaisseau:
             p.blt(self.x, self.y, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
         if self.equipe == "ennemis":
             p.blt(self.x, self.y, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+
+
+
+
+
+
+
+
 
 class App:
     def __init__(self):
