@@ -17,7 +17,7 @@ class Vaisseau:
         cap, int: Si le vaisseau peut transporter des sous-vaisseaux, sinon égal à 0
     """
 
-    def __init__(self, type):
+    def __init__(self, type, x, y):
         """
         Initialisation en fonction du type de vaisseau
         Les attributs peuvents être améliorés plus tard avec des crédits
@@ -28,7 +28,9 @@ class Vaisseau:
             self.str_atk = 3 # Les attaques font 1 dégats
             self.aa = False
             self.cap = 0
-            coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "destroyer":
             self.pv = 30
@@ -36,7 +38,9 @@ class Vaisseau:
             self.str_atk = 5 # Les attaques font 2 dégats
             self.aa = True
             self.cap = 0
-            #coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "porte-vaisseau":
             self.pv = 50
@@ -44,7 +48,9 @@ class Vaisseau:
             self.str_atk = 0
             self.aa = False
             self.cap = 3
-            #coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_bombardier":
             self.pv = 5
@@ -52,7 +58,9 @@ class Vaisseau:
             self.str_atk = 2 # Les attaques font 2 dégats
             self.aa = True
             self.cap = 0
-            #coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_chasseur":
             self.pv = 5
@@ -60,8 +68,11 @@ class Vaisseau:
             self.str_atk = 1 # Les attaques font 1 dégats
             self.aa = False
             self.cap = 0
-            #coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.x = x
+            self.y = y
+            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
     
+
     def coule(self):
         """
         Fonction pour determiner si le vaisseau est detruit
@@ -82,12 +93,17 @@ class Vaisseau:
         if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
             if p.btnp(p.MOUSE_BUTTON_RIGHT):
                 pass
-
+    
+    def draw_vais(self):
+        p.blt(self.coords[0], self.coords[1], 0, self.x, self.y, self.coords[2], self.coords[3], 0)
 
 class App:
     def __init__(self):
-        p.init(width=128, height=128, title="Bataille Spatiale", fps=60, quit_key=p.btnp(p.KEY_ESCAPE))
+        p.init(width=128, height=128, title="Bataille Spatiale", fps=60)
+        p.load("theme.pyxres")
         p.mouse(True)
+        ennemis["fregate"].append(Vaisseau("fregate", 40, 20))
+        allies["fregate"].append(Vaisseau("fregate", 40, 100))
 
         p.run(self.update, self.draw)
 
@@ -96,3 +112,7 @@ class App:
 
     def draw(self):
         p.cls(0)
+        allies["fregate"][0].draw_vais()
+        ennemis["fregate"][0].draw_vais()
+
+App()
