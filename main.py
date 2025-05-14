@@ -97,7 +97,7 @@ class Vaisseau:
         self.pv = val
 
     def get_coords(self):
-        return self.coords
+        return (self.x, self.y)
 
     def get_cible(self):
         return self.cible
@@ -120,7 +120,7 @@ class Vaisseau:
     def attaquer(self):
         cible = self.selection_cible()
         if cible != None and not self.coule():
-            p.line(self.x, self.y, self.cible.x, self.cible.y, 8)
+            p.line(self.x, self.y, cible.get_coords, cible.get_coords, 8)
             cible.prends_degats(self.str_atk)
 
     def selection_cible(self):
@@ -129,14 +129,14 @@ class Vaisseau:
             if i_tab >= len(ennemis):
                 i_tab += 1
             else:
-                self.cible = r.choice(ennemis)
+                return r.choice(ennemis)
 
         if self.equipe == "ennemis" and not self.coule():
             i_tab = 0
             if i_tab >= len(allies):
                 i_tab += 1
             else:
-                self.cible = r.choice(allies)
+                return r.choice(allies)
 
     def draw_vais(self):
         if self.equipe == "allies":
