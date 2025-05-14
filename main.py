@@ -1,4 +1,5 @@
 import pyxel as p
+import random as r
 
 allies = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux allie
 ennemis = {"fregate": [], "destroyer": [], "porte-vaisseau": [], "sous-vaisseau": []} # Vaisseaux ennemis
@@ -22,10 +23,11 @@ class Vaisseau:
         Initialisation en fonction du type de vaisseau
         Les attributs peuvents être améliorés plus tard avec des crédits
         """
+        self.equipe = equipe
+        self.x = x
+        self.y = y
+        self.cible = None
         if type == "fregate":
-            self.equipe = equipe
-            self.x = x
-            self.y = y
             self.pv = 20
             self.spd_atk = 120 # Attaque toutes les 2 secondes
             self.str_atk = 3 # Les attaques font 1 dégats
@@ -34,9 +36,6 @@ class Vaisseau:
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "destroyer":
-            self.equipe = equipe
-            self.x = x
-            self.y = y
             self.pv = 30
             self.spd_atk = 300 # Attaque toutes les 5 secondes
             self.str_atk = 5 # Les attaques font 2 dégats
@@ -45,9 +44,6 @@ class Vaisseau:
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "porte-vaisseau":
-            self.equipe = equipe
-            self.x = x
-            self.y = y
             self.pv = 50
             self.spd_atk = 0 # N'attaque pas directement
             self.str_atk = 0
@@ -56,9 +52,6 @@ class Vaisseau:
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_bombardier":
-            self.equipe = equipe
-            self.x = x
-            self.y = y
             self.pv = 5
             self.spd_atk = 180 # Attaque toutes 3 les secondes
             self.str_atk = 2 # Les attaques font 2 dégats
@@ -67,18 +60,19 @@ class Vaisseau:
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_chasseur":
-            self.equipe = equipe
-            self.x = x
-            self.y = y
             self.pv = 5
             self.spd_atk = 30 # Attaque 2 fois par secondes
             self.str_atk = 1 # Les attaques font 1 dégats
             self.aa = False
             self.cap = 0
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
-    
+
+
     def get_coords(self):
         return self.coords
+
+    def get_cible(self):
+        return self.cible
 
     def coule(self):
         """
@@ -88,6 +82,8 @@ class Vaisseau:
         """
         if self.pv <= 0:
             p.rect(self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+            return True
+        return False
 
     def prends_degats(self, degats):
         self.pv -= degats
@@ -95,17 +91,24 @@ class Vaisseau:
 
     def attaquer(self, cible):
         cible.prends_degats(self.str_atk)
-    
-    def selection(self):
-        if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
-            if p.btnp(p.MOUSE_BUTTON_RIGHT) or p.btnp(p.MOUSE_BUTTON_LEFT):
-                for tab in ennemis.values():
-                    for vais in tab:
-                        if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
-                            if p.btnp(p.MOUSE_BUTTON_RIGHT) or p.btnp(p.MOUSE_BUTTON_LEFT):
-                                p.line(self.x, self.y, vais.x, vais.y, 8)
 
-    
+    def selection_cible(self):
+        if self.equipe == "allies":
+            if self.aa:
+                i_tab = r.randint(0, 3)
+                self.cible = r.choice(ennemis[i_tab])
+            else:
+                i_tab = r.randint(0, 2)
+                self.cible = r.choice(ennemis[i_tab])
+
+        if self.equipe == "ennemis":
+            if self.aa:
+                i_tab = r.randint(0, 3)
+                self.cible = r.choice(ennemis[i_tab])
+            else:
+                i_tab = r.randint(0, 2)
+                self.cible = r.choice(ennemis[i_tab])
+
     def draw_vais(self):
         if self.equipe == "allies":
             p.blt(self.x, self.y, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
@@ -123,10 +126,19 @@ class App:
         p.run(self.update, self.draw)
 
     def update(self):
-        pass
+        for tab in allies.values():
+            for vais in tab:
+                vais.selection_cible()
 
     def draw(self):
         p.cls(0)
-        allies["fregate"][0].draw_vais()
+        p.line(0, 127, 256, 127, 1)
+        p.line(0, 128, 256, 128, 1)
+        for tab in allies.values():
+            for vais in tab:
+                vais.draw_vais()
+        for tab in ennemis.values():
+            for vais in tab:
+                vais.draw_vais()
 
 App()
