@@ -72,7 +72,7 @@ class Vaisseau:
             self.pv = 50
             self.str_atk = 0
             self.cap = 3
-            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
+            self.coords = (0, 56, 64, 24) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_bombardier":
             self.pv = 5
@@ -145,11 +145,10 @@ class App:
         p.load("theme.pyxres")
         p.mouse(True)
         allies[0].append(Vaisseau("fregate", "allies", 4, 236))
-        allies[0].append(Vaisseau("fregate", "allies", 40, 236))
         allies[0].append(Vaisseau("destroyer", "allies", 4, 206))
-        allies[0].append(Vaisseau("destroyer", "allies", 64, 206))
-        ennemis[0].append(Vaisseau("fregate", "allies", 4, 4))
-        ennemis[0].append(Vaisseau("fregate", "allies", 40, 4))
+        allies[0].append(Vaisseau("porte-vaisseau", "allies", 4, 176))
+        ennemis[0].append(Vaisseau("fregate", "ennemis", 4, 4))
+        ennemis[0].append(Vaisseau("fregate", "ennemis", 40, 4))
 
         p.run(self.update, self.draw)
 
