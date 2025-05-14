@@ -36,8 +36,8 @@ class UI:
 class Vaisseau:
     """
     Classe pour tous les vaisseaux
-    Chaque vaisseau fait partie d'une de 4 classes:
-        Fregate; Destroyer; Porte-Vaisseau; Sous-Vaisseau
+    Chaque vaisseau fait partie d'une de 2 classes:
+        Fregate; Destroyer
     Chaque vaisseau fait partie de l'equipe alliee (bleue) ou ennemie (rouge)
     Les vaisseaux on _ attributs:
         equipe, str: L'equipe auquelle le vaisseau appartient
@@ -71,24 +71,6 @@ class Vaisseau:
             self.cap = 0
             self.coords = (0, 20, 56, 24) # Les coordonées dans le fichier pyxel
 
-        if type == "porte-vaisseau":
-            self.pv = 100
-            self.str_atk = 1
-            self.cap = 3
-            self.coords = (0, 56, 64, 24) # Les coordonées dans le fichier pyxel
-
-        if type == "sous-vaisseau_bombardier":
-            self.pv = 5
-            self.str_atk = 2 # Les attaques font 2 dégats
-            self.cap = 0
-            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
-
-        if type == "sous-vaisseau_chasseur":
-            self.pv = 5
-            self.str_atk = 1 # Les attaques font 1 dégats
-            self.cap = 0
-            self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
-
 
     def get_pv(self):
         return self.pv
@@ -113,12 +95,13 @@ class Vaisseau:
         return False
 
     def graphiques_constants(self):
+        self.draw_vais()
         cible = self.cible
         if cible != None and not self.coule():
             if self.equipe == "allies":
-                p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 12)
+                p.line(self.x + self.coords[2]/2, self.y + self.coords[3]/2, cible.get_coords()[0] + cible.coords[2] // 2, cible.get_coords()[1] + cible.coords[3] // 2, 12)
             if self.equipe == "ennemis":
-                p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 8)
+                p.line(self.x + self.coords[2]/2, self.y + self.coords[3]/2, cible.get_coords()[0] + cible.coords[2] // 2, cible.get_coords()[1] + cible.coords[3] // 2, 8)
         if self.coule():
             p.rect(self.x, self.y, self.coords[2], self.coords[3], 0)
 
@@ -163,6 +146,7 @@ class App:
         allies.append(Vaisseau("fregate", "allies", 40, 236))
         allies.append(Vaisseau("destroyer", "allies", 4, 206))
         ennemis.append(Vaisseau("fregate", "ennemis", 4, 4))
+        ennemis.append(Vaisseau("fregate", "ennemis", 40, 4))
         ennemis.append(Vaisseau("destroyer", "ennemis", 4, 24))
         self.tour = 0
         self.menu = 0
@@ -203,13 +187,20 @@ class App:
         if compteur_pertes_a == compteur_vais_a or compteur_pertes_e == compteur_vais_e: 
             if compteur_pertes_a == compteur_vais_a:
                 print("Les allies ont perdu la bataille")
+                p.quit()
             if compteur_pertes_e == compteur_vais_e:
                 print("Les ennemis ont perdu la bataille")
+                p.quit()
 
     def update(self):
         if self.menu == 0 :
             self.ecran_acceuil()
         if self.menu ==1:
+            if p.frame_count % 60 == 0:
+                print("Tour n°", self.tour)
+                self.tour += 1
+                for vais in allies:
+                    vais.attaquer()
             self.victoire()
 
     def draw(self):
@@ -223,22 +214,15 @@ class App:
                 p.text(55, 110, "est une simulation de bataille navale", 7)
                 p.text(65, 125, "Appuyez sur espace pour continuer", 7)
 
-               
+
         if self.menu == 1:
             p.cls(0)
             p.line(0, 127, 256, 127, 1)
             p.line(0, 128, 256, 128, 1)
-            if p.frame_count % 60 == 0:
-                print("Tour n°", self.tour)
-                self.tour += 1
-                for vais in allies:
-                    vais.attaquer()
-                    vais.draw_vais()
-                    vais.coule()
-                for vais in ennemis:
-                    vais.attaquer()
-                    vais.draw_vais()
-                    vais.coule()
+            for vais in allies:
+                vais.graphiques_constants()
+            for vais in ennemis:
+                vais.graphiques_constants()
 
 
 
