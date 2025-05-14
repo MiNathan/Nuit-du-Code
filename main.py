@@ -156,8 +156,25 @@ class App:
         ennemis.append(Vaisseau("fregate", "ennemis", 4, 4))
         ennemis.append(Vaisseau("destroyer", "ennemis", 4, 34))
         self.tour = 0
+        self.menu = 0
+        self.ecran = 0
+        self.ecran_v = False
 
         p.run(self.update, self.draw)
+    
+        
+    def ecran_acceuil(self):
+        if self.ecran < 102 :
+            self.ecran = self.ecran + 1 
+
+        
+        if p.btn(p.KEY_SPACE) :
+            self.ecran_v = True
+        if self.ecran_v == True:
+             self.ecran = self.ecran + 1
+        if self.ecran == 256:
+            self.menu = 1
+
 
     def victoire(self):
         compteur_vais_a = 0
@@ -181,22 +198,38 @@ class App:
                 print("Les ennemis ont perdu la bataille")
 
     def update(self):
-        self.victoire()
+        if self.menu == 0 :
+            self.ecran_acceuil()
+        if self.menu ==1:
+            self.victoire()
 
     def draw(self):
-        p.cls(0)
-        p.line(0, 127, 256, 127, 1)
-        p.line(0, 128, 256, 128, 1)
-        if p.frame_count % 60 == 0:
-            print("Tour n°", self.tour)
-            self.tour += 1
-            for vais in allies:
-                vais.attaquer()
-                vais.draw_vais()
-                vais.coule()
-            for vais in ennemis:
-                vais.attaquer()
-                vais.draw_vais()
-                vais.coule()
+        if self.menu == 0:
+            p.cls(0)
+            p.blt(self.ecran, 50, 0 , 0 ,0 , 51 ,23)
+            if self.ecran == 102:
+                p.text(90, 80, "Appuyez sur espace", 7)
+        if self.menu == 1:
+            p.cls(0)
+            p.line(0, 127, 256, 127, 1)
+            p.line(0, 128, 256, 128, 1)
+            if p.frame_count % 60 == 0:
+                print("Tour n°", self.tour)
+                self.tour += 1
+                for vais in allies:
+                    vais.attaquer()
+                    vais.draw_vais()
+                    vais.coule()
+                for vais in ennemis:
+                    vais.attaquer()
+                    vais.draw_vais()
+                    vais.coule()
+
+
+
+
+
+
+
 
 App()
