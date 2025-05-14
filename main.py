@@ -109,18 +109,27 @@ class Vaisseau:
         Sinon renvoie False
         """
         if self.pv <= 0:
-            p.rect(self.x, self.y, self.coords[2], self.coords[3], 0)
             return True
         return False
+
+    def graphiques_constants(self):
+        cible = self.cible
+        if cible != None and not self.coule():
+            if self.equipe == "allies":
+                p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 12)
+            if self.equipe == "ennemis":
+                p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 8)
+        if self.coule():
+            p.rect(self.x, self.y, self.coords[2], self.coords[3], 0)
 
     def prends_degats(self, degats):
         self.pv -= degats
         self.coule()
 
     def attaquer(self):
-        cible = self.selection_cible()
-        if cible != None and not self.coule():
-            p.line(self.x, self.y, cible.get_coords()[0], cible.get_coords()[1], 8)
+        self.cible = self.selection_cible()
+        cible = self.cible
+        if cible != None and not self.coule() and not cible.coule():
             cible.prends_degats(self.str_atk)
 
     def selection_cible(self):
@@ -154,7 +163,7 @@ class App:
         allies.append(Vaisseau("fregate", "allies", 40, 236))
         allies.append(Vaisseau("destroyer", "allies", 4, 206))
         ennemis.append(Vaisseau("fregate", "ennemis", 4, 4))
-        ennemis.append(Vaisseau("destroyer", "ennemis", 4, 34))
+        ennemis.append(Vaisseau("destroyer", "ennemis", 4, 24))
         self.tour = 0
         self.menu = 0
         self.ecran = 0
