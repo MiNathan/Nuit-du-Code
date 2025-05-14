@@ -17,61 +17,68 @@ class Vaisseau:
         cap, int: Si le vaisseau peut transporter des sous-vaisseaux, sinon égal à 0
     """
 
-    def __init__(self, type, x, y):
+    def __init__(self, type, equipe, x, y):
         """
         Initialisation en fonction du type de vaisseau
         Les attributs peuvents être améliorés plus tard avec des crédits
         """
         if type == "fregate":
+            self.equipe = equipe
+            self.x = x
+            self.y = y
             self.pv = 20
             self.spd_atk = 120 # Attaque toutes les 2 secondes
             self.str_atk = 3 # Les attaques font 1 dégats
             self.aa = False
             self.cap = 0
-            self.x = x
-            self.y = y
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "destroyer":
+            self.equipe = equipe
+            self.x = x
+            self.y = y
             self.pv = 30
             self.spd_atk = 300 # Attaque toutes les 5 secondes
             self.str_atk = 5 # Les attaques font 2 dégats
             self.aa = True
             self.cap = 0
-            self.x = x
-            self.y = y
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "porte-vaisseau":
+            self.equipe = equipe
+            self.x = x
+            self.y = y
             self.pv = 50
             self.spd_atk = 0 # N'attaque pas directement
             self.str_atk = 0
             self.aa = False
             self.cap = 3
-            self.x = x
-            self.y = y
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_bombardier":
+            self.equipe = equipe
+            self.x = x
+            self.y = y
             self.pv = 5
             self.spd_atk = 180 # Attaque toutes 3 les secondes
             self.str_atk = 2 # Les attaques font 2 dégats
             self.aa = True
             self.cap = 0
-            self.x = x
-            self.y = y
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
 
         if type == "sous-vaisseau_chasseur":
+            self.equipe = equipe
+            self.x = x
+            self.y = y
             self.pv = 5
             self.spd_atk = 30 # Attaque 2 fois par secondes
             self.str_atk = 1 # Les attaques font 1 dégats
             self.aa = False
             self.cap = 0
-            self.x = x
-            self.y = y
             self.coords = (0, 0, 32, 16) # Les coordonées dans le fichier pyxel
     
+    def get_coords(self):
+        return self.coords
 
     def coule(self):
         """
@@ -91,19 +98,27 @@ class Vaisseau:
     
     def selection(self):
         if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
-            if p.btnp(p.MOUSE_BUTTON_RIGHT):
-                pass
+            if p.btnp(p.MOUSE_BUTTON_RIGHT) or p.btnp(p.MOUSE_BUTTON_LEFT):
+                for tab in ennemis.values():
+                    for vais in tab:
+                        if (p.mouse_x >= self.coords[0] or p.mouse_x <= self.coords[1]) and (p.mouse_y >= self.coords[2] or p.mouse_y <= self.coords[3]):
+                            if p.btnp(p.MOUSE_BUTTON_RIGHT) or p.btnp(p.MOUSE_BUTTON_LEFT):
+                                p.line(self.x, self.y, vais.x, vais.y, 8)
+
     
     def draw_vais(self):
-        p.blt(self.coords[0], self.coords[1], 0, self.x, self.y, self.coords[2], self.coords[3], 0)
+        if self.equipe == "allies":
+            p.blt(self.x, self.y, 0, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
+        if self.equipe == "ennemis":
+            p.blt(self.x, self.y, 1, self.coords[0], self.coords[1], self.coords[2], self.coords[3], 0)
 
 class App:
     def __init__(self):
-        p.init(width=128, height=128, title="Bataille Spatiale", fps=60)
+        p.init(width=256, height=256, title="Bataille Spatiale", fps=60)
         p.load("theme.pyxres")
         p.mouse(True)
-        ennemis["fregate"].append(Vaisseau("fregate", 40, 20))
-        allies["fregate"].append(Vaisseau("fregate", 40, 100))
+        allies["fregate"].append(Vaisseau("fregate", "allies", 4, 236))
+        ennemis["fregate"].append(Vaisseau("fregate", "allies", 4, 4))
 
         p.run(self.update, self.draw)
 
@@ -113,6 +128,5 @@ class App:
     def draw(self):
         p.cls(0)
         allies["fregate"][0].draw_vais()
-        ennemis["fregate"][0].draw_vais()
 
 App()
