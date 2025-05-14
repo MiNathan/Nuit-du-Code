@@ -201,6 +201,8 @@ class App:
                 self.tour += 1
                 for vais in allies:
                     vais.attaquer()
+                for vais in ennemis:
+                    vais.attaquer()
             self.victoire()
 
     def draw(self):
@@ -223,12 +225,5 @@ class App:
                 vais.graphiques_constants()
             for vais in ennemis:
                 vais.graphiques_constants()
-
-
-
-
-
-
-
 
 App()
